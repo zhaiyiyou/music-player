@@ -1,0 +1,7 @@
+{
+  "name": "music-player-api",
+  "private": true,
+  "dependencies": {
+    "netease-cloud-music-api-alger": "^4.30.0"
+  }
+}

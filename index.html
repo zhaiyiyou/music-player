@@ -580,7 +580,14 @@ a{color:var(--red);text-decoration:none}
 'use strict';
 
 // ==================== CONFIG ====================
-var API_BASE = localStorage.getItem('nm_api_base') || 'http://127.0.0.1:30488';
+var API_BASE = (function(){
+  var saved = localStorage.getItem('nm_api_base');
+  if (saved) return saved;
+  var host = window.location.hostname;
+  if (host === '127.0.0.1' || host === 'localhost') return 'http://127.0.0.1:30488';
+  if (host.endsWith('.vercel.app')) return '';
+  return '';
+})();
 var COOKIE = localStorage.getItem('nm_cookie') || '';
 var DEFAULT_QUALITY = localStorage.getItem('nm_quality') || 'exhigh';
 var VOLUME = parseFloat(localStorage.getItem('nm_vol') || '0.7');
