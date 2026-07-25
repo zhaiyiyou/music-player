@@ -1,6 +1,9 @@
 {
-  "name": "music-player-api",
+  "name": "music-player",
   "private": true,
+  "scripts": {
+    "start": "node server.js"
+  },
   "dependencies": {
     "netease-cloud-music-api-alger": "^4.30.0"
   }
