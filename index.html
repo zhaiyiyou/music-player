@@ -584,8 +584,11 @@ var API_BASE = (function(){
   var saved = localStorage.getItem('nm_api_base');
   if (saved) return saved;
   var host = window.location.hostname;
-  if (host === '127.0.0.1' || host === 'localhost') return 'http://127.0.0.1:30488';
+  var prot = window.location.protocol;
+  if (!host || host === '127.0.0.1' || host === 'localhost') return 'http://127.0.0.1:30488';
+  if (prot === 'file:') return 'http://127.0.0.1:30488';
   if (host.endsWith('.vercel.app')) return '';
+  if (host === 'infmusicplay.off.sd' || host === 'zhaiyiyou.github.io') return '';
   return '';
 })();
 var COOKIE = localStorage.getItem('nm_cookie') || '';
@@ -1325,7 +1328,9 @@ function renderDiscover(){
     }
     $('recPlaylists').innerHTML = html;
   }).catch(function(e){
-    $('recPlaylists').innerHTML = '<div class="empty-state">加载推荐歌单失败</div>';
+    $('recPlaylists').innerHTML = '<div class="empty-state">加载推荐歌单失败<br><small style="color:var(--txt3)">' +
+      (API_BASE ? 'API 服务器不可达 (' + API_BASE + ')' : '请点击右上角 ⚙ 配置 API 服务器地址') +
+      '</small></div>';
   });
 
   // new songs
