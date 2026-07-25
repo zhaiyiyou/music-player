@@ -580,7 +580,7 @@ a{color:var(--red);text-decoration:none}
 'use strict';
 
 // ==================== CONFIG ====================
-var API_BASE = localStorage.getItem('nm_api_base') || 'https://netease-cloud-music-api-blue-seven.vercel.app';
+var API_BASE = localStorage.getItem('nm_api_base') || 'http://127.0.0.1:30488';
 var COOKIE = localStorage.getItem('nm_cookie') || '';
 var DEFAULT_QUALITY = localStorage.getItem('nm_quality') || 'exhigh';
 var VOLUME = parseFloat(localStorage.getItem('nm_vol') || '0.7');
@@ -742,13 +742,27 @@ function apiFetch(path, params){
   }
   if (parts.length > 0) url += (path.indexOf('?') >= 0 ? '&' : '?') + parts.join('&');
 
-  return fetch(url)
-    .then(function(r){ return r.json(); })
+  var controller = new AbortController();
+  var timeout = setTimeout(function(){ controller.abort(); }, 12000);
+
+  return fetch(url, { signal: controller.signal })
+    .then(function(r){
+      clearTimeout(timeout);
+      if (!r.ok) throw new Error('HTTP ' + r.status + ' ' + r.statusText);
+      return r.json();
+    })
     .then(function(data){
       if (data.code !== 200) {
-        throw new Error(data.message || data.msg || ('API error: ' + data.code));
+        throw new Error(data.message || data.msg || ('API错误 ' + data.code));
       }
       return data;
+    })
+    .catch(function(e){
+      clearTimeout(timeout);
+      if (e.name === 'AbortError') {
+        throw new Error('请求超时，无法连接到 ' + API_BASE);
+      }
+      throw e;
     });
 }
 
